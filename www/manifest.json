@@ -1,0 +1,18 @@
+{
+  "name": "ZenHitori: Number Logic",
+  "short_name": "ZenHitori",
+  "description": "Calm, meditative Japanese Hitori number logic puzzle with soothing procedural stone acoustics.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0a1118",
+  "theme_color": "#0a1118",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
