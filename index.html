@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<!-- ZenHitori: Calm Japanese Hitori Number Logic Puzzle -->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>ZenHitori - Number Logic Puzzle</title>
+  <meta name="description" content="Calm, meditative Japanese Hitori number logic puzzle with soothing procedural stone and singing bowl acoustics.">
+  <meta name="theme-color" content="#0a1118">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/svg+xml" href="icon.svg">
+  <link rel="apple-touch-icon" href="icon.svg">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header>
+      <div class="brand">
+        <span class="brand-icon">🪨</span>
+        <h1 class="brand-title">ZenHitori</h1>
+      </div>
+      <div class="header-controls">
+        <button id="btn-sound" class="icon-btn" title="Toggle Sound" aria-label="Toggle Sound">🔊</button>
+        <button id="btn-rules" class="icon-btn" title="Rules & Help" aria-label="Rules and Help">❓</button>
+        <button id="btn-levels" class="icon-btn" title="Select Level" aria-label="Select Level">☰</button>
+      </div>
+    </header>
+
+    <!-- Level Bar -->
+    <div class="level-bar">
+      <div class="level-meta">
+        <span id="pack-name" class="pack-name">Spring Garden</span>
+        <span id="level-name" class="level-name">Level 1 (5×5)</span>
+      </div>
+      <div class="level-stats">
+        <div class="stat-item">
+          <span class="stat-label">Duplicates</span>
+          <span id="stat-conflicts" class="stat-value">0</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Moves</span>
+          <span id="stat-moves" class="stat-value">0</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Time</span>
+          <span id="stat-timer" class="stat-value">00:00</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Status Banner -->
+    <div id="status-banner" class="status-banner">
+      Eliminate duplicate numbers by shading cells with river stones.
+    </div>
+
+    <!-- Board Wrapper -->
+    <div class="board-wrapper">
+      <div class="board-container">
+        <div id="hitori-grid" class="hitori-grid"></div>
+      </div>
+    </div>
+
+    <!-- Controls Panel -->
+    <div class="controls-panel">
+      <!-- Input Mode Selector -->
+      <div class="mode-selector">
+        <button id="mode-cycle" class="mode-btn active" title="Cycle Neutral / Stone / Circle">
+          <span class="mode-icon">🔄</span>
+          <span>Cycle</span>
+        </button>
+        <button id="mode-shade" class="mode-btn" title="Direct Stone Shading">
+          <span class="mode-icon">🪨</span>
+          <span>Stone</span>
+        </button>
+        <button id="mode-circle" class="mode-btn" title="Direct White Circle">
+          <span class="mode-icon">⭕</span>
+          <span>Circle</span>
+        </button>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="action-buttons">
+        <button id="btn-hint" class="action-btn hint-btn" title="Get a deductive hint">
+          <span>💡</span>
+          <span>Hint</span>
+        </button>
+        <button id="btn-undo" class="action-btn" title="Undo last action">
+          <span>↩️</span>
+          <span>Undo</span>
+        </button>
+        <button id="btn-reset" class="action-btn" title="Reset puzzle">
+          <span>🗑️</span>
+          <span>Reset</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Level Selection Modal -->
+  <div id="modal-levels" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title">Select Level</h2>
+        <button id="close-levels" class="close-btn" aria-label="Close">✕</button>
+      </div>
+      <div id="packs-tabs" class="packs-tabs"></div>
+      <div id="levels-grid" class="levels-grid"></div>
+    </div>
+  </div>
+
+  <!-- Rules Modal -->
+  <div id="modal-rules" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title">How to Play Hitori</h2>
+        <button id="close-rules" class="close-btn" aria-label="Close">✕</button>
+      </div>
+      <div class="rule-item">
+        <div class="rule-num">1</div>
+        <div><strong>No Duplicate Numbers:</strong> In each row and column, no number can appear more than once among the unshaded (white) cells.</div>
+      </div>
+      <div class="rule-item">
+        <div class="rule-num">2</div>
+        <div><strong>No Touching Black Stones:</strong> Shaded (black) cells cannot touch each other horizontally or vertically (diagonal touching is allowed).</div>
+      </div>
+      <div class="rule-item">
+        <div class="rule-num">3</div>
+        <div><strong>Connected Stream:</strong> All unshaded (white) numbers must remain connected as a single continuous group. No isolated numbers or cutoffs!</div>
+      </div>
+      <div class="rule-item">
+        <div class="rule-num">💡</div>
+        <div><strong>Pro Tip:</strong> When you shade a cell black, all 4 of its neighbors are immediately safe (white). When a cell is confirmed white, all identical numbers in its row and column must be shaded!</div>
+      </div>
+      <button id="btn-rules-got-it" class="primary-btn" style="margin-top: 14px;">Understood</button>
+    </div>
+  </div>
+
+  <!-- Victory Modal -->
+  <div id="modal-victory" class="modal-overlay">
+    <div class="modal-content victory-card">
+      <div class="victory-icon">⛩️</div>
+      <h2 class="victory-title">Puzzle Complete!</h2>
+      <p id="victory-message" class="victory-message">Harmony restored across the stone garden.</p>
+      <div class="victory-stats">
+        <div class="stat-item">
+          <span class="stat-label">Time</span>
+          <span id="victory-time" class="stat-value">01:23</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Moves</span>
+          <span id="victory-moves" class="stat-value">18</span>
+        </div>
+      </div>
+      <button id="btn-next-level" class="primary-btn">Next Garden ➔</button>
+    </div>
+  </div>
+
+  <script src="hitori-engine.js"></script>
+  <script src="levels.js"></script>
+  <script src="audio.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
