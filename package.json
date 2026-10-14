@@ -1,0 +1,25 @@
+{
+  "name": "zenhitori",
+  "version": "1.0.0",
+  "description": "ZenHitori - Calm Japanese Hitori number logic puzzle",
+  "scripts": {
+    "test": "node --test test/engine.test.js",
+    "build": "node scripts/build.js"
+  },
+  "keywords": [
+    "puzzle",
+    "logic",
+    "hitori",
+    "nikoli",
+    "zen",
+    "offline",
+    "game"
+  ],
+  "author": "OfferPk",
+  "license": "MIT",
+  "devDependencies": {
+    "@capacitor/android": "^6.2.0",
+    "@capacitor/cli": "^6.2.0",
+    "@capacitor/core": "^6.2.0"
+  }
+}
