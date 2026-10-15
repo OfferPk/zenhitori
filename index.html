@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>ZenHitori - Number Logic Puzzle</title>
   <meta name="description" content="Calm, meditative Japanese Hitori number logic puzzle with soothing procedural stone and singing bowl acoustics.">
   <meta name="theme-color" content="#0a1118">
@@ -17,64 +17,66 @@
     <!-- Header -->
     <header>
       <div class="brand">
-        <span class="brand-icon">🪨</span>
+        <span class="brand-icon" aria-hidden="true">🪨</span>
         <h1 class="brand-title">ZenHitori</h1>
       </div>
       <div class="header-controls">
-        <button id="btn-sound" class="icon-btn" title="Toggle Sound" aria-label="Toggle Sound">🔊</button>
+        <button id="btn-sound" class="icon-btn" title="Sound on" aria-label="Sound" aria-pressed="true">🔊</button>
         <button id="btn-rules" class="icon-btn" title="Rules & Help" aria-label="Rules and Help">❓</button>
         <button id="btn-levels" class="icon-btn" title="Select Level" aria-label="Select Level">☰</button>
       </div>
     </header>
 
+    <main class="game-main">
     <!-- Level Bar -->
-    <div class="level-bar">
+    <section class="level-bar" aria-label="Level and puzzle status">
       <div class="level-meta">
         <span id="pack-name" class="pack-name">Spring Garden</span>
         <span id="level-name" class="level-name">Level 1 (5×5)</span>
       </div>
-      <div class="level-stats">
-        <div class="stat-item">
+      <div class="level-stats" role="group" aria-label="Puzzle statistics">
+        <div class="stat-item" aria-label="Duplicate conflicts">
           <span class="stat-label">Duplicates</span>
           <span id="stat-conflicts" class="stat-value">0</span>
         </div>
-        <div class="stat-item">
+        <div class="stat-item" aria-label="Moves made">
           <span class="stat-label">Moves</span>
           <span id="stat-moves" class="stat-value">0</span>
         </div>
-        <div class="stat-item">
+        <div class="stat-item" aria-label="Elapsed time">
           <span class="stat-label">Time</span>
           <span id="stat-timer" class="stat-value">00:00</span>
         </div>
       </div>
-    </div>
+    </section>
 
     <!-- Status Banner -->
-    <div id="status-banner" class="status-banner">
+    <div id="status-banner" class="status-banner" role="status" aria-live="polite" aria-atomic="true">
       Eliminate duplicate numbers by shading cells with river stones.
     </div>
 
     <!-- Board Wrapper -->
     <div class="board-wrapper">
       <div class="board-container">
-        <div id="hitori-grid" class="hitori-grid"></div>
+        <div id="hitori-grid" class="hitori-grid" role="group" aria-label="Hitori puzzle board" aria-describedby="board-help"></div>
       </div>
     </div>
+    <p id="board-help" class="visually-hidden">Activate a number to change its mark. Use the arrow keys to move between cells.</p>
 
     <!-- Controls Panel -->
     <div class="controls-panel">
       <!-- Input Mode Selector -->
-      <div class="mode-selector">
-        <button id="mode-cycle" class="mode-btn active" title="Cycle Neutral / Stone / Circle">
-          <span class="mode-icon">🔄</span>
+      <div class="mode-selector" role="group" aria-label="Cell marking mode">
+        <button id="mode-cycle" class="mode-btn active" type="button" aria-pressed="true" title="Cycle between unmarked, stone, and safe">
+          <span class="mode-icon" aria-hidden="true">🔄</span>
           <span>Cycle</span>
         </button>
-        <button id="mode-shade" class="mode-btn" title="Direct Stone Shading">
-          <span class="mode-icon">🪨</span>
+        <button id="mode-shade" class="mode-btn" type="button" aria-pressed="false" title="Mark cells as stones">
+          <span class="mode-icon" aria-hidden="true">🪨</span>
           <span>Stone</span>
         </button>
-        <button id="mode-circle" class="mode-btn" title="Direct White Circle">
-          <span class="mode-icon">⭕</span>
+        <button id="mode-circle" class="mode-btn" type="button" aria-pressed="false" title="Mark cells as safe">
+          <span class="mode-icon" aria-hidden="true">⭕</span>
           <span>Circle</span>
         </button>
       </div>
@@ -82,19 +84,20 @@
       <!-- Action Buttons -->
       <div class="action-buttons">
         <button id="btn-hint" class="action-btn hint-btn" title="Get a deductive hint">
-          <span>💡</span>
+          <span aria-hidden="true">💡</span>
           <span>Hint</span>
         </button>
         <button id="btn-undo" class="action-btn" title="Undo last action">
-          <span>↩️</span>
+          <span aria-hidden="true">↩️</span>
           <span>Undo</span>
         </button>
         <button id="btn-reset" class="action-btn" title="Reset puzzle">
-          <span>🗑️</span>
+          <span aria-hidden="true">🗑️</span>
           <span>Reset</span>
         </button>
       </div>
     </div>
+    </main>
   </div>
 
   <!-- Level Selection Modal -->
