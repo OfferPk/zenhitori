@@ -161,9 +161,16 @@
   // Render the board
   function renderBoard() {
     const size = currentLevel.size;
+    const focusedCell = gridElement.contains(document.activeElement)
+      ? document.activeElement.closest('.cell')
+      : null;
+    const focusPosition = focusedCell
+      ? { r: focusedCell.dataset.r, c: focusedCell.dataset.c }
+      : null;
     gridElement.innerHTML = '';
     gridElement.className = `hitori-grid grid-size-${size}`;
     gridElement.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
+    gridElement.setAttribute('aria-label', `${currentLevel.packName}, level ${currentLevel.levelIndex}, ${size} by ${size} puzzle board`);
 
     // Detect duplicate conflicts for highlighting
     const conflicts = HitoriEngine.getDuplicateConflicts(grid, currentLevel.grid);
@@ -176,13 +183,20 @@
 
     for (let r = 0; r < size; r++) {
       for (let c = 0; c < size; c++) {
-        const cell = document.createElement('div');
+        const cell = document.createElement('button');
+        cell.type = 'button';
         cell.className = 'cell';
         cell.dataset.r = r;
         cell.dataset.c = c;
         cell.textContent = currentLevel.grid[r][c];
 
         const state = grid[r][c];
+        const stateLabel = state === HitoriEngine.STATE_SHADED
+          ? 'shaded as a stone'
+          : state === HitoriEngine.STATE_WHITE
+            ? 'marked safe'
+            : 'unmarked';
+        cell.setAttribute('aria-label', `Row ${r + 1}, column ${c + 1}, number ${currentLevel.grid[r][c]}, ${stateLabel}`);
         if (state === HitoriEngine.STATE_SHADED) {
           cell.classList.add('shaded');
         } else if (state === HitoriEngine.STATE_WHITE) {
@@ -193,6 +207,11 @@
 
         gridElement.appendChild(cell);
       }
+    }
+
+    if (focusPosition) {
+      gridElement.querySelector(`[data-r="${focusPosition.r}"][data-c="${focusPosition.c}"]`)
+        ?.focus({ preventScroll: true });
     }
   }
 
@@ -395,11 +414,41 @@
     modeCycleBtn.classList.toggle('active', mode === 'cycle');
     modeShadeBtn.classList.toggle('active', mode === 'shade');
     modeCircleBtn.classList.toggle('active', mode === 'circle');
+    modeCycleBtn.setAttribute('aria-pressed', String(mode === 'cycle'));
+    modeShadeBtn.setAttribute('aria-pressed', String(mode === 'shade'));
+    modeCircleBtn.setAttribute('aria-pressed', String(mode === 'circle'));
     ZenAudio.initAudio();
   }
 
   // Drag painting support
   function setupDragEvents() {
+    gridElement.addEventListener('click', (e) => {
+      // Keyboard and assistive-technology activation dispatches a click without
+      // a preceding pointer event; pointer interactions are handled below.
+      if (e.detail !== 0) return;
+      const cell = e.target.closest('.cell');
+      if (cell) {
+        handleCellInteraction(parseInt(cell.dataset.r, 10), parseInt(cell.dataset.c, 10));
+      }
+    });
+
+    gridElement.addEventListener('keydown', (e) => {
+      const cell = e.target.closest('.cell');
+      if (!cell) return;
+
+      const r = parseInt(cell.dataset.r, 10);
+      const c = parseInt(cell.dataset.c, 10);
+      const deltas = { ArrowUp: [-1, 0], ArrowDown: [1, 0], ArrowLeft: [0, -1], ArrowRight: [0, 1] };
+      const delta = deltas[e.key];
+      if (!delta) return;
+
+      const nextCell = gridElement.querySelector(`[data-r="${r + delta[0]}"][data-c="${c + delta[1]}"]`);
+      if (nextCell) {
+        e.preventDefault();
+        nextCell.focus();
+      }
+    });
+
     gridElement.addEventListener('pointerdown', (e) => {
       const cell = e.target.closest('.cell');
       if (!cell || !isGameActive) return;
@@ -454,6 +503,8 @@
   btnSound.addEventListener('click', () => {
     const isMuted = ZenAudio.toggleMute();
     btnSound.textContent = isMuted ? '🔇' : '🔊';
+    btnSound.title = isMuted ? 'Sound off' : 'Sound on';
+    btnSound.setAttribute('aria-pressed', String(!isMuted));
   });
 
   btnRules.addEventListener('click', () => {
@@ -507,8 +558,11 @@
     });
   });
 
-  // Sound icon initial state
-  btnSound.textContent = ZenAudio.getMuted() ? '🔇' : '🔊';
+  // Sound icon and accessible state reflect the saved preference
+  const initialMuted = ZenAudio.getMuted();
+  btnSound.textContent = initialMuted ? '🔇' : '🔊';
+  btnSound.title = initialMuted ? 'Sound off' : 'Sound on';
+  btnSound.setAttribute('aria-pressed', String(!initialMuted));
 
   // Keyboard accessibility
   window.addEventListener('keydown', (e) => {
